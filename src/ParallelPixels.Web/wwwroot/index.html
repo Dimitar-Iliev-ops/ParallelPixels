@@ -1,15 +1,188 @@
 <!doctype html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ParallelPixels — Batch image studio</title><link rel="stylesheet" href="styles.css"></head>
-<body><header><a class="brand" href="/">▧ <span>ParallelPixels</span></a><span class="local">● LOCAL WORKSPACE</span></header>
-<main><div class="intro"><div><p class="eyebrow">CONCURRENT IMAGE PROCESSING</p><h1>Big batches.<br><span>Working together.</span></h1><p>Resize a whole collection with a team of parallel workers.<br>Your folders stay organized. Your originals stay intact.</p></div><div class="batch-status"><span id="status">Idle</span><p id="statusDetail">Ready for your next collection</p></div></div>
-<div id="notice" role="alert" hidden></div>
-<section class="setup"><div class="section-title"><h2>01 <span>Set up your batch</span></h2><span>JPG · PNG · GIF · BMP · TIFF</span></div>
-<form id="batchForm"><fieldset id="settings"><div class="folders"><label>Source folder<input id="source" required placeholder="C:\Photos\Originals" autocomplete="off"><small>Full path on the computer running this app. Includes subfolders.</small></label><label>Output folder<input id="output" required placeholder="C:\Photos\Resized" autocomplete="off"><small>Separate folder. Existing output files with matching names are replaced.</small></label></div>
-<div class="options"><label>Size preset<select id="preset"><option value="800,600">Web · 800 × 600</option><option value="480,360">Small · 480 × 360</option><option value="1920,1080">Full HD · 1920 × 1080</option><option value="custom">Custom dimensions</option></select></label><label>Width <span>px</span><input id="width" type="number" value="800" min="1" max="8192" required></label><label>Height <span>px</span><input id="height" type="number" value="600" min="1" max="8192" required></label><label>Parallel workers<select id="workers"><option>1</option><option>2</option><option selected>4</option><option>8</option><option>16</option></select></label><label class="check"><input type="checkbox" id="aspect" checked> Maintain aspect ratio</label></div></fieldset>
-<div class="controls"><button id="start" type="submit" class="primary">▶ Start batch</button><button id="pause" type="button" disabled>Ⅱ Pause</button><button id="resume" type="button" disabled>↻ Resume</button><button id="stop" type="button" disabled>■ Stop</button><span id="elapsed">No batch started</span></div></form></section>
-<div class="metrics"><div><span>DISCOVERED</span><strong id="discovered">0</strong></div><div><span>IN QUEUE</span><strong id="pendingCount">0</strong></div><div><span>COMPLETED</span><strong id="completed">0</strong></div><div><span>FAILED</span><strong id="failed">0</strong></div></div>
-<section><div class="section-title"><h2>02 <span>Worker activity</span></h2><span id="workerCount">YOUR PARALLEL TEAM</span></div><div id="workerGrid" class="worker-grid"><div class="empty">Your workers will appear here when you start a batch.</div></div><p class="hint">Pause takes effect at the next checkpoint. An image operation already in progress may finish first.</p></section>
-<div class="bottom-grid"><section><div class="section-title"><h2>03 <span>Results</span></h2><label class="search-label"><input type="search" id="search" aria-label="Filter results" placeholder="Filter files…"></label></div><div class="table-wrap"><table><thead><tr><th>FILE</th><th>SIZE</th><th>STATUS</th><th>TIME</th></tr></thead><tbody id="results"><tr><td colspan="4" class="empty">Processed images and errors will appear here.</td></tr></tbody></table></div><p class="hint">Latest 500 results. Click a completed file to preview it.</p></section><section><div class="section-title"><h2>04 <span>Waiting queue</span></h2></div><ol id="queue"><li class="empty">No images waiting</li></ol><p class="hint">Showing the first 100 waiting images.</p></section></div>
-<footer>Built for the Concurrent Programming final project <span>ASP.NET Core · Task workers · Shared queue</span></footer></main>
-<dialog id="preview"><button id="closePreview" aria-label="Close preview">×</button><h2 id="previewTitle"></h2><img id="previewImage" alt="Resized output preview"></dialog><script src="app.js"></script></body></html>
-
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>ParallelPixels — Batch image studio</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <a class="brand" href="/">▧ <span>ParallelPixels</span></a
+      ><span class="local">● LOCAL WORKSPACE</span>
+    </header>
+    <main>
+      <div class="intro">
+        <div>
+          <p class="eyebrow">CONCURRENT IMAGE PROCESSING</p>
+          <h1>Big batches.<br /><span>Working together.</span></h1>
+          <p>
+            Resize a whole collection with a team of parallel workers.<br />Your
+            folders stay organized. Your originals stay intact.
+          </p>
+        </div>
+        <div class="batch-status">
+          <span id="status">Idle</span>
+          <p id="statusDetail">Ready for your next collection</p>
+        </div>
+      </div>
+      <div id="notice" role="alert" hidden></div>
+      <section class="setup">
+        <div class="section-title">
+          <h2>01 <span>Set up your batch</span></h2>
+          <span>JPG · PNG · GIF · BMP · TIFF</span>
+        </div>
+        <form id="batchForm">
+          <fieldset id="settings">
+            <div class="folders">
+              <label
+                >Source folder<input
+                  id="source"
+                  required
+                  placeholder="C:\Photos\Originals"
+                  autocomplete="off"
+                /><small
+                  >Full path on the computer running this app. Includes
+                  subfolders.</small
+                ></label
+              ><label
+                >Output folder<input
+                  id="output"
+                  required
+                  placeholder="C:\Photos\Resized"
+                  autocomplete="off"
+                /><small
+                  >Separate folder. Existing output files with matching names
+                  are replaced.</small
+                ></label
+              >
+            </div>
+            <div class="options">
+              <label
+                >Size preset<select id="preset">
+                  <option value="800,600">Web · 800 × 600</option>
+                  <option value="480,360">Small · 480 × 360</option>
+                  <option value="1920,1080">Full HD · 1920 × 1080</option>
+                  <option value="custom">Custom dimensions</option>
+                </select></label
+              ><label
+                >Width <span>px</span
+                ><input
+                  id="width"
+                  type="number"
+                  value="800"
+                  min="1"
+                  max="8192"
+                  required /></label
+              ><label
+                >Height <span>px</span
+                ><input
+                  id="height"
+                  type="number"
+                  value="600"
+                  min="1"
+                  max="8192"
+                  required /></label
+              ><label
+                >Parallel workers<select id="workers">
+                  <option>1</option>
+                  <option>2</option>
+                  <option selected>4</option>
+                  <option>8</option>
+                  <option>16</option>
+                </select></label
+              ><label class="check"
+                ><input type="checkbox" id="aspect" checked /> Maintain aspect
+                ratio</label
+              >
+            </div>
+          </fieldset>
+          <div class="controls">
+            <button id="start" type="submit" class="primary">
+              ▶ Start batch</button
+            ><button id="pause" type="button" disabled>Ⅱ Pause</button
+            ><button id="resume" type="button" disabled>↻ Resume</button
+            ><button id="stop" type="button" disabled>■ Stop</button
+            ><span id="elapsed">No batch started</span>
+          </div>
+        </form>
+      </section>
+      <div class="metrics">
+        <div><span>DISCOVERED</span><strong id="discovered">0</strong></div>
+        <div><span>IN QUEUE</span><strong id="pendingCount">0</strong></div>
+        <div><span>COMPLETED</span><strong id="completed">0</strong></div>
+        <div><span>FAILED</span><strong id="failed">0</strong></div>
+      </div>
+      <section>
+        <div class="section-title">
+          <h2>02 <span>Worker activity</span></h2>
+          <span id="workerCount">YOUR PARALLEL TEAM</span>
+        </div>
+        <div id="workerGrid" class="worker-grid">
+          <div class="empty">
+            Your workers will appear here when you start a batch.
+          </div>
+        </div>
+        <p class="hint">
+          Pause takes effect at the next checkpoint. An image operation already
+          in progress may finish first.
+        </p>
+      </section>
+      <div class="bottom-grid">
+        <section>
+          <div class="section-title">
+            <h2>03 <span>Results</span></h2>
+            <label class="search-label"
+              ><input
+                type="search"
+                id="search"
+                aria-label="Filter results"
+                placeholder="Filter files…"
+            /></label>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>FILE</th>
+                  <th>SIZE</th>
+                  <th>STATUS</th>
+                  <th>TIME</th>
+                </tr>
+              </thead>
+              <tbody id="results">
+                <tr>
+                  <td colspan="4" class="empty">
+                    Processed images and errors will appear here.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="hint">
+            Latest 500 results. Click a completed file to preview it.
+          </p>
+        </section>
+        <section>
+          <div class="section-title">
+            <h2>04 <span>Waiting queue</span></h2>
+          </div>
+          <ol id="queue">
+            <li class="empty">No images waiting</li>
+          </ol>
+          <p class="hint">Showing the first 100 waiting images.</p>
+        </section>
+      </div>
+      <footer>
+        Built for the Concurrent Programming final project
+        <span>ASP.NET Core · Task workers · Shared queue</span>
+      </footer>
+    </main>
+    <dialog id="preview">
+      <button id="closePreview" aria-label="Close preview">×</button>
+      <h2 id="previewTitle"></h2>
+      <img id="previewImage" alt="Resized output preview" />
+    </dialog>
+    <script src="app.js"></script>
+  </body>
+</html>

@@ -12,15 +12,15 @@ Each of N background workers takes a directory or image job from the shared queu
 
 ## Race conditions and prevention
 
-| Potential race | Protection |
-| --- | --- |
-| Two workers dequeue the same image | Dequeue occurs under one shared Lock |
-| Queue looks empty during directory enumeration | Active counter and empty check are read together under the Lock |
-| UI enumerates a changing collection | Snapshot copies are produced under the Lock |
-| Two Start requests overlap | State validation and initialization occur under the Lock |
-| New batch overwrites state before old workers finish | Restart is forbidden until the coordinator has joined all workers |
-| Stop leaves paused workers waiting forever | Cancellation interrupts gate waits and Stop releases the gate |
-| Partial output appears as a completed image | Save to a unique temporary file, then replace destination after the save succeeds |
+| Potential race                                       | Protection                                                                        |
+| ---------------------------------------------------- | --------------------------------------------------------------------------------- |
+| Two workers dequeue the same image                   | Dequeue occurs under one shared Lock                                              |
+| Queue looks empty during directory enumeration       | Active counter and empty check are read together under the Lock                   |
+| UI enumerates a changing collection                  | Snapshot copies are produced under the Lock                                       |
+| Two Start requests overlap                           | State validation and initialization occur under the Lock                          |
+| New batch overwrites state before old workers finish | Restart is forbidden until the coordinator has joined all workers                 |
+| Stop leaves paused workers waiting forever           | Cancellation interrupts gate waits and Stop releases the gate                     |
+| Partial output appears as a completed image          | Save to a unique temporary file, then replace destination after the save succeeds |
 
 ## Pause and cancellation
 
